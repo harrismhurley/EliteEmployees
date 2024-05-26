@@ -9,8 +9,8 @@
             "server": "localhost",
             "port": 5432,
             "driver": "PostgreSQL",
-            "name": "psql - employeetrack_db",
-            "database": "employeetrack_db",
+            "name": "psql - company_db",
+            "database": "company_db",
             "username": "postgres",
             "password": "1234567890"
         }
