@@ -1,12 +1,13 @@
 {
   "dependencies": {
-    "inquirer": "^8.2.4"
+    "express": "^4.19.2",
+    "inquirer": "^8.2.4",
+    "pg": "^8.11.5"
   },
   "name": "eliteemployees",
   "description": "## Your Task",
   "version": "1.0.0",
   "main": "script.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
