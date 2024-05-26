@@ -6,36 +6,29 @@ CREATE DATABASE company_db;
 -- Connect to the newly created database
 \c company_db
 
-
 -- @block
 -- Create the department table
-CREATE TABLE IF NOT EXISTS department (
+CREATE TABLE department (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(30)
+    name VARCHAR(30) UNIQUE NOT NULL
 );
 
 -- Create the role table
-CREATE TABLE IF NOT EXISTS roles (
+CREATE TABLE role (
     id SERIAL PRIMARY KEY,
-    title VARCHAR(30),
-    salary DECIMAL,
-    department_id INTEGER,
+    title VARCHAR(30) UNIQUE NOT NULL,
+    salary DECIMAL NOT NULL,
+    department_id INTEGER NOT NULL,
     FOREIGN KEY (department_id) REFERENCES department(id) ON DELETE SET NULL
 );
 
--- Create the managers table
-CREATE TABLE IF NOT EXISTS managers (
-    manager_name VARCHAR(55),
-    manager_id SERIAL PRIMARY KEY
-);
-
--- Create the employees table
-CREATE TABLE IF NOT EXISTS employees (
+-- Create the employee table
+CREATE TABLE employee (
     id SERIAL PRIMARY KEY,
-    first_name VARCHAR(30),
-    last_name VARCHAR(30),
-    role_id INTEGER,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(30) NOT NULL,
+    role_id INTEGER NOT NULL,
     manager_id INTEGER,
-    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE SET NULL,
-    FOREIGN KEY (manager_id) REFERENCES managers(manager_id) ON DELETE SET NULL
+    FOREIGN KEY (role_id) REFERENCES role(id) ON DELETE SET NULL,
+    FOREIGN KEY (manager_id) REFERENCES employee(id) ON DELETE SET NULL
 );
