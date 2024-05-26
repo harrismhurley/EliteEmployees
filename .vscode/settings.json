@@ -1,0 +1,18 @@
+{
+    "workbench.colorCustomizations": {
+        "minimap.background": "#00000000",
+        "scrollbar.shadow": "#00000000"
+    },
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "psql - company_db",
+            "database": "company_db",
+            "username": "postgres",
+            "password": "1234567890"
+        }
+    ]
+}
