@@ -93,7 +93,11 @@ const viewAllDepartments = async () => {
 
 // Function to view all roles
 const viewAllRoles = async () => {
-    const result = await pool.query('SELECT * FROM roles');
+    const result = await pool.query(`
+        SELECT r.id, r.title, r.salary, d.name AS department
+        FROM roles r
+        INNER JOIN department d ON r.department_id = d.id
+    `);
     console.table(result.rows);
     mainMenu();
 };
@@ -104,7 +108,7 @@ const viewAllEmployees = async () => {
         SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department, r.salary, 
                CONCAT(m.first_name, ' ', m.last_name) AS manager
         FROM employee e
-        LEFT JOIN roles r ON e.role_id = r.id
+        LEFT JOIN roles r ON e.roles_id = r.id
         LEFT JOIN department d ON r.department_id = d.id
         LEFT JOIN employee m ON e.manager_id = m.id
     `);
@@ -199,7 +203,7 @@ const addEmployee = async () => {
         },
     ]);
 
-    await pool.query('INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.firstName, answers.lastName, answers.roleId, answers.managerId]);
+    await pool.query('INSERT INTO employee (first_name, last_name, roles_id, manager_id) VALUES ($1, $2, $3, $4)', [answers.firstName, answers.lastName, answers.roleId, answers.managerId]);
     console.log('Employee added successfully.');
     mainMenu();
 };
@@ -233,7 +237,7 @@ const updateEmployeeRole = async () => {
         },
     ]);
 
-    await pool.query('UPDATE employee SET role_id = $1 WHERE id = $2', [answers.roleId, answers.employeeId]);
+    await pool.query('UPDATE employee SET roles_id = $1 WHERE id = $2', [answers.roleId, answers.employeeId]);
     console.log('Employee role updated successfully.');
     mainMenu();
 };
@@ -284,7 +288,7 @@ const viewEmployeesByManager = async () => {
     const result = await pool.query(`
         SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department
         FROM employee e
-        JOIN roles r ON e.role_id = r.id
+        JOIN roles r ON e.roles_id = r.id
         JOIN department d ON r.department_id = d.id
         WHERE e.manager_id = $1
     `, [answer.managerId]);
@@ -309,11 +313,10 @@ const viewEmployeesByDepartment = async () => {
     });
 
     const result = await pool.query(`
-        SELECT e.id, e.first_name, e.last_name, r.title, d.name AS department
+        SELECT e.id, e.first_name, e.last_name, r.title
         FROM employee e
-        JOIN roles r ON e.role_id = r.id
-        JOIN department d ON r.department_id = d.id
-        WHERE d.id = $1
+        JOIN roles r ON e.roles_id = r.id
+        WHERE r.department_id = $1
     `, [answer.departmentId]);
 
     console.table(result.rows);
@@ -355,8 +358,22 @@ const deleteRole = async () => {
         choices: roleChoices,
     });
 
-    await pool.query('DELETE FROM roles WHERE id = $1', [answer.roleId]);
-    console.log('Role deleted successfully.');
+    try {
+        // Check if there are any employees associated with the role being deleted
+        const associatedEmployees = await pool.query('SELECT id FROM employee WHERE roles_id = $1', [answer.roleId]);
+
+        if (associatedEmployees.rows.length > 0) {
+            // If there are associated employees, display a message and do not delete the role
+            console.log('There are employees associated with this role. You must handle them before deleting the role.');
+        } else {
+            // If there are no associated employees, delete the role
+            await pool.query('DELETE FROM roles WHERE id = $1', [answer.roleId]);
+            console.log('Role deleted successfully.');
+        }
+    } catch (error) {
+        console.error('Error deleting role:', error.message);
+    }
+
     mainMenu();
 };
 
@@ -396,9 +413,9 @@ const viewTotalUtilizedBudget = async () => {
     });
 
     const result = await pool.query(`
-        SELECT d.name AS department, SUM(r.salary) AS utilized_budget
+        SELECT d.name, SUM(r.salary) AS total_budget
         FROM employee e
-        JOIN roles r ON e.role_id = r.id
+        JOIN roles r ON e.roles_id = r.id
         JOIN department d ON r.department_id = d.id
         WHERE d.id = $1
         GROUP BY d.name
@@ -408,14 +425,9 @@ const viewTotalUtilizedBudget = async () => {
     mainMenu();
 };
 
-// Start the main menu
-mainMenu();
-
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-    res.status(404).end();
-});
-
+// Start the application
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+    mainMenu();
 });
+
