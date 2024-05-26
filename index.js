@@ -342,7 +342,6 @@ const deleteDepartment = async () => {
     console.log('Department deleted successfully.');
     mainMenu();
 };
-
 // Function to delete a role
 const deleteRole = async () => {
     const roles = await pool.query('SELECT id, title FROM roles');
