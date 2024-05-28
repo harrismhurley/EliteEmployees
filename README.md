@@ -41,13 +41,13 @@ N/A
   - '\i query.sql'
 
 5.  Open server.js and update the database.
-  - 'node index.js'
+  - 'node server.js'
 
 ## Usage
 To use this application, follow these steps:
 
 1. Start the server:
-  - 'node index.js'
+  - 'node server.js'
 
 2. Follow the prompts.
 
@@ -75,7 +75,7 @@ N/A
 ![employee table](./Images/updatedTable.png)
 
 ## Walkthrough
-[Walkthrough Video]()
+[Walkthrough Video](https://drive.google.com/file/d/1_U89HNXqlPO6JH65Sz_3t55vyxsidKIJ/view)
 
 ## How to Contribute
 If you would like to contribute you can contact me [Via Email](mailto:harrismhurley@icloud.com?subject=[GitHub]%20Dev%20Connect) or visit [github](https://github.com/harrismhurley).
